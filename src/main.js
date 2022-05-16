@@ -8,6 +8,10 @@ import Galleria from 'primevue/galleria';
 import FileUpload from 'primevue/fileupload';
 import BlockUI from 'primevue/blockui';
 import ProgressSpinner from 'primevue/progressspinner';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+import Toolbar from 'primevue/toolbar';
+import Sidebar from 'primevue/sidebar';
 import router from './router'
 
 import ToastService from 'primevue/toastservice';
@@ -32,5 +36,9 @@ app.component('Galleria', Galleria);
 app.component('FileUpload', FileUpload);
 app.component('BlockUI', BlockUI);
 app.component('ProgressSpinner', ProgressSpinner);
+app.component('InputText', InputText);
+app.component('Button', Button);
+app.component('Toolbar', Toolbar);
+app.component('Sidebar', Sidebar);
 
 app.mount('#app')

@@ -1,13 +1,14 @@
 <template>
+
   <div class="Images">
-    <div class="FileUpload">
-      <FileUpload name="images[]" url="https://mini17.net/api/v1/images " @upload="onUpload" :multiple="true"
-        accept="image/*" :maxFileSize="10000000">
-        <template #empty>
-          <p>Drag and drop files to here to upload.</p>
-        </template>
-      </FileUpload>
-    </div>
+    <Toolbar>
+      <template #start>
+        <Button label="Back" icon="pi pi-chevron-left" @click="$router.back()" />
+      </template>
+      <template #end>
+        <Button label="Upload" icon="pi pi-upload" class="p-button-success" @click="showUpload = true" />
+      </template>
+    </Toolbar>
     <!-- <div class="SpeedDial">
       <SpeedDial :model="items" type="quarter-circle" direction="up-left" />
     </div> -->
@@ -43,16 +44,22 @@
     <div class="ProgressSpinner" v-if="blockedPanel">
       <ProgressSpinner />
     </div>
+    <Sidebar v-model:visible="showUpload" position="full">
+      <UploadVue :album="$route.query.album" @onUpload="onUpload"></UploadVue>
+    </Sidebar>
   </div>
 </template>
 
 <script>
 import ImageService from '@/services/ImageService';
+import UploadVue from '../components/Upload.vue';
 export default {
   name: 'Images',
+  components: { UploadVue },
   data() {
 
     return {
+      showUpload: false,
       blockedPanel: false,
       paginator: {
         totalRecords: 0
@@ -78,12 +85,22 @@ export default {
     }
   },
   methods: {
-    onUpload() {
-      this.$toast.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
+    loadData() {
+      this.blockedPanel = true
+      this.galleriaService.getImages(this.$route.query.album).then(data => {
+        this.images = data.images;
+        this.paginator.totalRecords = data.total;
+        this.blockedPanel = false
+      });
     },
+
     imageClick(index) {
       this.activeIndex = index;
       this.displayCustom = true;
+    },
+    onUpload() {
+      this.showUpload = false
+      this.loadData();
     },
     onPage(event) {
 
@@ -108,12 +125,7 @@ export default {
     this.galleriaService = new ImageService();
   },
   mounted() {
-    this.blockedPanel = true
-    this.galleriaService.getImages(this.$route.query.album).then(data => {
-      this.images = data.images;
-      this.paginator.totalRecords = data.total;
-      this.blockedPanel = false
-    });
+    this.loadData();
   },
 
 }
@@ -135,16 +147,7 @@ export default {
   transform: translateY(-50%);
 }
 
-.FileUpload {
-  position: fixed;
-  right: 0;
-  top: 0;
-  width: 500px;
-  height: 100vh;
-  overflow: scroll;
-  overflow-x: hidden;
-  // scrollbar-width: 0;
-}
+
 
 .grid {
   display: grid;

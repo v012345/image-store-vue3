@@ -12,7 +12,15 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Toolbar from 'primevue/toolbar';
 import Sidebar from 'primevue/sidebar';
+import DataView from 'primevue/dataview';
+import Dropdown from 'primevue/dropdown';
+import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions';
+import Skeleton from 'primevue/skeleton';
+import ProgressBar from 'primevue/progressbar';
+import Divider from 'primevue/divider';
+import Card from 'primevue/card';
 import router from './router'
+import store from "./store";
 
 import ToastService from 'primevue/toastservice';
 import Toast from 'primevue/toast';
@@ -21,12 +29,14 @@ import Toast from 'primevue/toast';
 import 'primevue/resources/primevue.min.css'
 import 'primevue/resources/themes/bootstrap4-light-blue/theme.css'
 import 'primeicons/primeicons.css'
+import 'primeflex/primeflex.css';
 
 const app = createApp(App);
 
 app.use(PrimeVue);
 app.use(ToastService);
 app.use(router);
+app.use(store);
 
 app.component('Dialog', Dialog);
 app.component('Toast', Toast);
@@ -40,5 +50,12 @@ app.component('InputText', InputText);
 app.component('Button', Button);
 app.component('Toolbar', Toolbar);
 app.component('Sidebar', Sidebar);
+app.component('DataView', DataView);
+app.component('Dropdown', Dropdown);
+app.component('DataViewLayoutOptions', DataViewLayoutOptions);
+app.component('Skeleton', Skeleton);
+app.component('ProgressBar', ProgressBar);
+app.component('Divider', Divider);
+app.component('Card', Card);
 
 app.mount('#app')

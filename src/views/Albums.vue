@@ -8,14 +8,18 @@
     </Toolbar>
     <div v-for="album in albums" :key="album.id">
       <i class="pi pi-folder-open">
-        <router-link :to="{ path: '/images', query: { album: album.id } }">{{ album.name }}</router-link>
+        <router-link :to="{ path: '/images', query: { album: album.id } }">{{ album.name }} [{{ album.images_count }}]
+        </router-link>
       </i>
-
     </div>
-    <!-- <div>
-      <InputText type="text" v-model="albumName" />
-      <Button label="创建图集"></Button>
-    </div> -->
+    <div class="field col-12 md:col-12" v-if="loading">
+      <Skeleton class="mb-2"></Skeleton>
+      <Skeleton width="10rem" class="mb-2"></Skeleton>
+      <Skeleton width="5rem" class="mb-2"></Skeleton>
+      <Skeleton height="2rem" class="mb-2"></Skeleton>
+      <Skeleton width="10rem" height="4rem"></Skeleton>
+    </div>
+
   </div>
 </template>
 
@@ -25,6 +29,7 @@ export default {
   name: 'Albums',
   data() {
     return {
+      loading: true,
       albums: [],
       albumName: "",
     }
@@ -46,7 +51,8 @@ export default {
   },
   mounted() {
     this.AlbumService.getAlbums().then(albums => {
-      this.albums = albums
+      this.albums = albums;
+      this.loading = false;
     });
 
   },

@@ -2,6 +2,21 @@
 import axios from "axios";
 
 export default class ImageService {
+    deleteImage(id) {
+        return axios.delete(`https://mini17.net/api/v1/images/${id}`)
+    }
+    downloadImage(image) {
+        axios.get(`https://mini17.net/proxy/cdn/${image.uri}`, {
+            responseType: 'blob',
+        }).then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            let fileLink = document.createElement('a');
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', image.name);
+            document.body.appendChild(fileLink);
+            fileLink.click();
+        });
+    }
     getImages(album = 1, page = 1, per_page = 15) {
         return axios.get("https://mini17.net/api/v1/images", {
             params: {

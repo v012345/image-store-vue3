@@ -1,4 +1,9 @@
 <template>
+    <Toolbar>
+        <template #end>
+            <Button label="Sign Up" icon="pi pi-user-plus" class="p-button-success" @click="$router.push('/signup')" />
+        </template>
+    </Toolbar>
     <div class="container">
         <div class="grid">
             <div class="col-4">
@@ -10,22 +15,14 @@
                             <div class="col-12 flex align-items-center justify-content-center">
                                 <div class="p-fluid">
                                     <div class="field">
-                                        <label for="username">Username</label>
-                                        <InputText id="username" type="text" />
+                                        <label for="email">E-mail</label>
+                                        <InputText id="email" type="text" v-model="email" />
                                     </div>
                                     <div class="field">
                                         <label for="password">Password</label>
-                                        <InputText id="password" type="password" />
+                                        <InputText id="password" type="password" v-model="password" />
                                     </div>
-                                    <div class="grid">
-                                        <div class="col-6">
-                                            <Button label="Sign Up" icon="pi pi-user-plus"
-                                                class="p-button-success"></Button>
-                                        </div>
-                                        <div class="col-6">
-                                            <Button label="Login"></Button>
-                                        </div>
-                                    </div>
+                                    <Button label="Login" @click="login" :loading="isLoggingin"></Button>
                                 </div>
                             </div>
                         </div>
@@ -36,25 +33,46 @@
             </div>
         </div>
     </div>
+    <Toast />
 </template>
 
 <script>
-
+import UserService from '@/services/UserService';
 export default {
     name: 'Login',
     data() {
         return {
+            email: "",
+            password: "",
+            isLoggingin: false,
         }
     },
     methods: {
+        login() {
+            this.isLoggingin = true
+            this.UserService.login({
+                email: this.email,
+                password: this.password
+            }).then(() => {
+                this.$router.push("/")
+            }).catch(e => {
+                this.isLoggingin = false
+                this.$toast.add({ severity: 'error', summary: e.response.statusText, detail: e.response.data, life: 3000 });
+            })
+        }
     },
+    created() {
+        this.UserService = new UserService();
+
+        // if(this.UserService.)
+    }
 }
 </script>
 
 <style scoped lang="less">
 .container {
-    margin-top: 50vh;
-    transform: translateY(-50%)
+    // transform: translateY(50%);
+    margin-top: 100px;
 }
 </style>
 

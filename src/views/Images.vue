@@ -104,7 +104,7 @@
     </div>
 
     <Toast position="top-left" />
-    <BlockUI :blocked="blockedPanel" :fullScreen="true"></BlockUI>
+    <!-- <BlockUI :blocked="blockedPanel" :fullScreen="true"></BlockUI> -->
     <div class="ProgressSpinner" v-if="blockedPanel">
       <ProgressSpinner />
     </div>

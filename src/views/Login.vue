@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import UserService from '@/services/UserService';
+import User from '@/services/UserService';
 export default {
     name: 'Login',
     data() {
@@ -50,21 +50,19 @@ export default {
     methods: {
         login() {
             this.isLoggingin = true
-            this.UserService.login({
+            User.login({
                 email: this.email,
                 password: this.password
             }).then(() => {
                 this.$router.push("/")
             }).catch(e => {
-                this.isLoggingin = false
-                this.$toast.add({ severity: 'error', summary: e.response.statusText, detail: e.response.data, life: 3000 });
+                console.log(e)
+                // this.isLoggingin = false
+                // this.$toast.add({ severity: 'error', summary: e.response.statusText, detail: e.response.data, life: 3000 });
             })
         }
     },
     created() {
-        this.UserService = new UserService();
-
-        // if(this.UserService.)
     }
 }
 </script>

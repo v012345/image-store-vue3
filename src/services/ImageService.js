@@ -1,11 +1,38 @@
 
 import axios from '@/utils/request'
 
-export default class ImageService {
-    deleteImage(id) {
-        return axios.delete(`/images/${id}`)
+class ImageService {
+    constructor() {
+        if (!ImageService.instance) {
+            ImageService.instance = this;
+        }
+        return ImageService.instance;
     }
-    downloadImage(image) {
+    delete(id) {
+        return axios.delete(`/images/${id}`)
+
+    }
+
+    store(images, album) {
+        // let formData = new FormData();
+        // images.forEach(file => {
+        //     formData.append('images', file);
+        // })
+        return axios.post("/images", {
+            "images[]": images,
+            album
+        }, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            onUploadProgress: progressEvent => {
+                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                console.log(percentCompleted)
+            }
+        })
+    }
+
+    download(image) {
         axios.get(`https://mini17.net/proxy/cdn/${image.uri}`, {
             responseType: 'blob',
         }).then((response) => {
@@ -17,7 +44,7 @@ export default class ImageService {
             fileLink.click();
         });
     }
-    getImages(album = 1, page = 1, per_page = 15) {
+    get(album = 1, page = 1, per_page = 15) {
         return axios.get("/images", {
             params: {
                 album, page, per_page
@@ -39,3 +66,8 @@ export default class ImageService {
         // return fetch('demo/data/products-small.json').then(res => res.json()).then(d => d.data);
     }
 }
+
+const instance = new ImageService();
+Object.freeze(instance);
+
+export default instance;

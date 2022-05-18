@@ -19,6 +19,8 @@ import Skeleton from 'primevue/skeleton';
 import ProgressBar from 'primevue/progressbar';
 import Divider from 'primevue/divider';
 import Card from 'primevue/card';
+import Chip from 'primevue/chip';
+import Menu from 'primevue/menu';
 import router from './router'
 import store from "./store";
 
@@ -57,5 +59,7 @@ app.component('Skeleton', Skeleton);
 app.component('ProgressBar', ProgressBar);
 app.component('Divider', Divider);
 app.component('Card', Card);
+app.component('Chip', Chip);
+app.component('Menu', Menu);
 
 app.mount('#app')

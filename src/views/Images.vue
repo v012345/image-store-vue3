@@ -23,16 +23,31 @@
       </Galleria>
 
 
-      <!-- <div v-if="images" class="grid" style="max-width: 1000px;">
-        <div v-for="(image, index) of images" class="col-3" :key="index">
-          <img :src="image.thumbnail_src" :alt="image.alt" style="cursor: pointer;max-width: 300px;"
-            @click="imageClick(index)" />
+      <div class="card" v-if="isloading">
+        <div class="grid formgrid">
+          <div class="field col-12 md:col-4" v-for="i in 3" :key="i">
+            <div class="custom-skeleton p-4">
+              <div class="flex mb-3">
+                <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>
+                <div>
+                  <Skeleton width="10rem" class="mb-2"></Skeleton>
+                  <Skeleton width="5rem" class="mb-2"></Skeleton>
+                  <Skeleton height=".5rem"></Skeleton>
+                </div>
+              </div>
+              <Skeleton width="100%" height="150px"></Skeleton>
+              <div class="flex justify-content-center mt-3">
+                <Skeleton width="4rem" height="2rem"></Skeleton>
+                <Skeleton width="4rem" height="2rem"></Skeleton>
+              </div>
+            </div>
+          </div>
         </div>
-      </div> -->
-      <div class="card">
+      </div>
+      <div v-else class="card">
         <DataView :value="images" :lazy="true" :first="first" :totalRecords="paginator.totalRecords" :layout="layout"
-          :paginator="true" :rows="15" :sortOrder="sortOrder" :rowsPerPageOptions="[15, 24, 33]" @page="onPage($event)"
-          :sortField="sortField">
+          :alwaysShowPaginator="false" :paginator="true" :rows="15" :sortOrder="sortOrder"
+          :rowsPerPageOptions="[15, 24, 33]" @page="onPage($event)" :sortField="sortField">
           <template #header>
             <div class="grid grid-nogutter">
               <div class="col-6" style="text-align: left">
@@ -104,19 +119,18 @@
     </div>
 
     <Toast position="top-left" />
-    <!-- <BlockUI :blocked="blockedPanel" :fullScreen="true"></BlockUI> -->
-    <div class="ProgressSpinner" v-if="blockedPanel">
-      <ProgressSpinner />
-    </div>
     <Sidebar v-model:visible="showUpload" position="full">
       <UploadVue :album="$route.query.album" @onUpload="onUpload"></UploadVue>
     </Sidebar>
   </div>
+
+
+
 </template>
 
 <script>
-import ImageService from '@/services/ImageService';
-import UploadVue from '../components/Upload.vue';
+import Image from '@/services/ImageService';
+import UploadVue from '@/components/Upload.vue';
 export default {
   name: 'Images',
   components: { UploadVue },
@@ -125,7 +139,7 @@ export default {
     return {
       first: 0,
       showUpload: false,
-      blockedPanel: false,
+      isloading: false,
       paginator: {
         totalRecords: 0
       },
@@ -160,22 +174,22 @@ export default {
   methods: {
     downloadImage(image) {
       // console.log(image)
-      this.galleriaService.downloadImage(image)
+      Image.download(image)
     },
     loadData() {
-      this.blockedPanel = true
-      this.galleriaService.getImages(this.$route.query.album).then(data => {
+      this.isloading = true
+      Image.get(this.$route.query.album).then(data => {
         console.log(data.images)
         this.images = data.images;
         this.paginator.totalRecords = data.total;
-        this.blockedPanel = false
+        this.isloading = false
       });
     },
     onSortChange(event) {
       console.log(event)
     },
     async deleteImage(id) {
-      await this.galleriaService.deleteImage(id);
+      await Image.delete(id);
       this.loadData();
     },
 
@@ -190,14 +204,14 @@ export default {
     onPage(event) {
 
       console.log(event)
-      this.blockedPanel = true
-      this.galleriaService.getImages(this.$route.query.album, event.page + 1, event.rows).then(data => {
+      this.isloading = true
+      Image.get(this.$route.query.album, event.page + 1, event.rows).then(data => {
         console.log(data.images)
         this.first = 0
         this.images = data.images;
         // console.log(data)
         this.paginator.totalRecords = data.total
-        this.blockedPanel = false
+        this.isloading = false
       });
 
       //event.page: New page number
@@ -207,9 +221,9 @@ export default {
     }
 
   },
-  galleriaService: null,
+
   created() {
-    this.galleriaService = new ImageService();
+
   },
   mounted() {
     this.loadData();

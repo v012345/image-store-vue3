@@ -15,22 +15,23 @@
                             <div class="col-12 flex align-items-center justify-content-center">
                                 <div class="p-fluid">
                                     <div class="field">
-                                        <label for="username">Username</label>
-                                        <InputText id="username" type="text" />
+                                        <label for="Name">Name</label>
+                                        <InputText id="Name" type="text" v-model="name" />
                                     </div>
                                     <div class="field">
-                                        <label for="username">E-mail Address</label>
-                                        <InputText id="email" type="text" />
+                                        <label for="email">E-mail Address</label>
+                                        <InputText id="email" type="text" v-model="email" />
                                     </div>
                                     <div class="field">
                                         <label for="password">Password</label>
-                                        <InputText id="password" type="password" />
+                                        <InputText id="password" type="password" v-model="password" />
                                     </div>
                                     <div class="field">
                                         <label for="password">Confirm Password</label>
-                                        <InputText id="confirmPassword" type="password" />
+                                        <InputText id="confirmPassword" type="password" v-model="confirm_password" />
                                     </div>
-                                    <Button label="Sign Up" class="p-button-success"></Button>
+                                    <Button label="Sign Up" class="p-button-success" @click="register"
+                                        :loading="isSigningUp"></Button>
                                 </div>
                             </div>
                         </div>
@@ -41,17 +42,44 @@
             </div>
         </div>
     </div>
+    <Toast />
 </template>
 
 <script>
+import User from '@/services/UserService';
 
 export default {
     name: 'SignUp',
     data() {
         return {
+            name: "",
+            email: "",
+            password: "",
+            confirm_password: "",
+            isSigningUp: false,
         }
     },
     methods: {
+        register() {
+            this.isSigningUp = true
+            User.register({
+                name: this.name,
+                email: this.email,
+                password: this.password,
+                confirm_password: this.confirm_password,
+            }).then(() => {
+                this.$router.push("/")
+            }).catch(e => {
+                this.isSigningUp = false
+                console.log(e)
+                for (const key in e.response.data) {
+                    e.response.data[key].forEach(element => {
+                        this.$toast.add({ severity: 'error', summary: key, detail: element, life: 3000 });
+                    });
+                }
+                // 
+            })
+        }
     },
 }
 </script>

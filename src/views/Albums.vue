@@ -1,9 +1,13 @@
 <template>
   <div class="Albums">
     <Toolbar>
+      <template #start>
+        <Button label="Home" @click="$router.push('/')" />
+      </template>
       <template #end>
         <InputText type="text" v-model="albumName" placeholder="Album Name" />
-        <Button label="Create" icon="pi pi-check" class="p-button-success" @click="createAlbum($event)" />
+        <Button label="Create" icon="pi pi-check" class="p-button-success" @click="createAlbum($event)"
+          :loading="isCreating" />
       </template>
     </Toolbar>
     <div v-for="album in albums" :key="album.id">
@@ -24,12 +28,13 @@
 </template>
 
 <script>
-import AlbumService from '@/services/AlbumService';
+import Album from '@/services/AlbumService';
 export default {
   name: 'Albums',
   data() {
     return {
       loading: true,
+      isCreating: false,
       albums: [],
       albumName: "",
     }
@@ -38,23 +43,21 @@ export default {
     createAlbum(event) {
       console.log(event)
       if (this.albumName) {
-        this.AlbumService.createAlbum(this.albumName).then(data => {
+        this.isCreating = true
+        Album.create(this.albumName).then(data => {
           this.$router.push({ path: '/images', query: { album: data.id } })
         });
       }
-
     }
   },
-  AlbumService: null,
-  created() {
-    this.AlbumService = new AlbumService();
-  },
+
+
   mounted() {
-    this.AlbumService.getAlbums().then(albums => {
+    Album.get().then(albums => {
+      console.log(albums)
       this.albums = albums;
       this.loading = false;
     });
-
   },
 
 }

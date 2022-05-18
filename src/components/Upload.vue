@@ -1,7 +1,8 @@
 <template>
     <div class="FileUpload">
         <FileUpload name="images[]" :url="'https://mini17.net/api/v1/images?album=' + album" @upload="onUpload"
-            :multiple="true" accept="image/*" :maxFileSize="10000000">
+            @progress="onProgress" :customUpload="true" @uploader="myUploader" :multiple="true" accept="image/*"
+            :maxFileSize="10000000">
             <template #empty>
                 <p>Drag and drop files to here to upload.</p>
             </template>
@@ -10,7 +11,7 @@
 </template>
 
 <script>
-
+import Image from '@/services/ImageService';
 export default {
     name: 'Upload',
     data() {
@@ -19,7 +20,7 @@ export default {
     },
     props: {
         album: {
-            type: Number,
+            type: [Number, String],
         }
     },
     methods: {
@@ -27,6 +28,16 @@ export default {
             this.$toast.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
             this.$emit('onUpload')
         },
+        myUploader(event) {
+            console.log(event)
+            Image.store(event.files, this.album).then(() => {
+                this.onUpload()
+            })
+            // return true
+        },
+        onProgress(a, b, c) {
+            console.log(a, b, c)
+        }
     },
 }
 </script>

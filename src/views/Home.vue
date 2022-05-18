@@ -5,7 +5,7 @@
         <Button label="Login" icon="pi pi-user" @click="$router.push('/login')" />
       </template>
       <template v-else>
-        <Button label="My Albums" icon="pi pi-folder-open" @click="$router.push('/albums')" />
+        <UserVue></UserVue>
       </template>
 
     </template>
@@ -15,11 +15,14 @@
 
 <script>
 import Auth from '@/utils/auth'
+
+import UserVue from "@/components/User.vue"
 export default {
   name: 'Home',
+  components: { UserVue },
   data() {
     return {
-      hasAuth: Auth.getToken()
+      hasAuth: Auth.getToken(),
     }
   },
   methods: {

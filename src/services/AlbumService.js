@@ -1,20 +1,25 @@
 
 import axios from '@/utils/request'
 
-export default class AlbumService {
-    getAlbums() {
-        return axios.get("/albums").then(res => {
-            // console.log(res.data)
-            return res.data
-        })
+class AlbumService {
+    constructor() {
+        if (!AlbumService.instance) {
+            AlbumService.instance = this;
+        }
+        return AlbumService.instance;
+    }
+    get() {
+        return axios.get("/albums")
         // return fetch('demo/data/products-small.json').then(res => res.json()).then(d => d.data);
     }
-    createAlbum(name) {
+    create(name) {
         return axios.post("/albums", {
             name
-        }).then(res => {
-            // console.log(res.data)
-            return res.data
         })
     }
 }
+
+const instance = new AlbumService();
+Object.freeze(instance);
+
+export default instance;

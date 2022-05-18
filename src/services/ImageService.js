@@ -13,23 +13,24 @@ class ImageService {
 
     }
 
-    store(images, album) {
+    store(images, album, onProgres) {
         // let formData = new FormData();
         // images.forEach(file => {
         //     formData.append('images', file);
         // })
-        return axios.post("/images", {
-            "images[]": images,
-            album
-        }, {
+        let config = {
             headers: {
                 'Content-Type': 'multipart/form-data'
             },
-            onUploadProgress: progressEvent => {
-                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-                console.log(percentCompleted)
-            }
-        })
+        }
+        if (onProgres && typeof (onProgres) == "function") {
+
+            config.onUploadProgress = onProgres
+        }
+        return axios.post("/images", {
+            "images[]": images,
+            album
+        }, config)
     }
 
     download(image) {

@@ -56,9 +56,9 @@ export default {
             }).then(() => {
                 this.$router.push("/")
             }).catch(e => {
-                console.log(e)
-                // this.isLoggingin = false
-                // this.$toast.add({ severity: 'error', summary: e.response.statusText, detail: e.response.data, life: 3000 });
+                // console.log(e)
+                this.isLoggingin = false
+                this.$toast.add({ severity: 'error', summary: e.response.statusText, detail: e.response.data, life: 3000 });
             })
         }
     },

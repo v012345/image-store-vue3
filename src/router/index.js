@@ -37,14 +37,14 @@ const router = createRouter({
     routes,
 });
 router.beforeEach((to, from) => {
-    console.log(from.path, to.path);
     // ...
+
     // explicitly return false to cancel the navigation
     if (to.path == "/login") {
         if (Auth.getToken())
             return false
     }
-    return true
+    return from == from
 })
 
 export default router;

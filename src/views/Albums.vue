@@ -40,8 +40,7 @@ export default {
     }
   },
   methods: {
-    createAlbum(event) {
-      console.log(event)
+    createAlbum() {
       if (this.albumName) {
         this.isCreating = true
         Album.create(this.albumName).then(data => {
@@ -54,7 +53,6 @@ export default {
 
   mounted() {
     Album.get().then(albums => {
-      console.log(albums)
       this.albums = albums;
       this.loading = false;
     });

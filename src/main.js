@@ -21,6 +21,8 @@ import Divider from 'primevue/divider';
 import Card from 'primevue/card';
 import Chip from 'primevue/chip';
 import Menu from 'primevue/menu';
+import ConfirmPopup from 'primevue/confirmpopup';
+import ConfirmationService from 'primevue/confirmationservice';
 import router from './router'
 import store from "./store";
 
@@ -39,6 +41,7 @@ app.use(PrimeVue);
 app.use(ToastService);
 app.use(router);
 app.use(store);
+app.use(ConfirmationService);
 
 app.component('Dialog', Dialog);
 app.component('Toast', Toast);
@@ -61,5 +64,7 @@ app.component('Divider', Divider);
 app.component('Card', Card);
 app.component('Chip', Chip);
 app.component('Menu', Menu);
+app.component('ConfirmPopup', ConfirmPopup);
+
 
 app.mount('#app')

@@ -13,7 +13,6 @@ class UserService {
         return UserService.instance;
     }
     login(data) {
-        console.log(data)
         return axios.post('/auth/login', data).then(res => {
             Auth.setToken("Bearer " + res.token)
             Cookies.set("username", res.name)

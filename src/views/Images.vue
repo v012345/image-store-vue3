@@ -95,24 +95,36 @@
                     <span class="product-category">{{ slotProps.data.albums[0].name }}</span>
                   </div>
                   <Button icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"
-                    @click="deleteImage(slotProps.data.id)"></Button>
+                    @click="deleteImage($event, slotProps.data.id)"></Button>
                   <!-- <span :class="'product-badge status-' + slotProps.data.inventoryStatus.toLowerCase()">{{
                       slotProps.data.inventoryStatus
                   }}</span> -->
                 </div>
                 <div class="product-grid-item-content">
-                  <img :src="slotProps.data.thumbnail_src" :alt="slotProps.data.name"
-                    @click="imageClick(slotProps.index)" />
+                  <template v-if="!isChangingPage">
+                    <img :src="slotProps.data.thumbnail_src" :alt="slotProps.data.name"
+                      @click="imageClick(slotProps.index)" />
+                  </template>
+                  <template v-else>
+                    <div class="progress-spinner-container">
+                      <ProgressSpinner style="width:50px;height:50px" strokeWidth="8" fill="var(--surface-ground)"
+                        animationDuration=".5s" />
+                    </div>
+                  </template>
+
                   <div class="product-name">{{ slotProps.data.name }}</div>
                   <div class="product-description">{{ slotProps.data.created_at }}</div>
                   <!-- <Rating :modelValue="slotProps.data.rating" :readonly="true" :cancel="false"></Rating> -->
                 </div>
                 <div class="product-grid-item-bottom">
                   <span class="product-price">id:{{ slotProps.data.id }}</span>
-                  <Button icon="pi pi-download" @click="downloadImage(slotProps.data)"></Button>
+                  <Button icon="pi pi-download" @click="downloadImage(slotProps.data)"
+                    :loading="slotProps.data.isDownloading"></Button>
                 </div>
               </div>
             </div>
+
+
           </template>
         </DataView>
       </div>
@@ -122,7 +134,16 @@
     <Sidebar v-model:visible="showUpload" position="full">
       <UploadVue :album="$route.query.album" @onUpload="onUpload"></UploadVue>
     </Sidebar>
+
   </div>
+  <ConfirmPopup>
+    <template #message="slotProps">
+      <div class="flex p-4">
+        <i :class="slotProps.message.icon" style="font-size: 1.5rem"></i>
+        <p class="pl-2">{{ slotProps.message.message }}</p>
+      </div>
+    </template>
+  </ConfirmPopup>
 
 
 
@@ -139,17 +160,21 @@ export default {
     return {
       first: 0,
       showUpload: false,
+      isChangingPage: false,
       isloading: false,
       paginator: {
-        totalRecords: 0
+        page: 0,
+        totalRecords: 0,
+        per_page: 15,
       },
       layout: 'grid',
+      orderBy: "-id",
       sortKey: null,
       sortOrder: null,
       sortField: null,
       sortOptions: [
-        { label: 'Id High to Low', value: '!price' },
-        { label: 'Id Low to High', value: 'price' },
+        { label: 'Id High to Low', value: '-id' },
+        { label: 'Id Low to High', value: '+id' },
       ],
       images: null,
       activeIndex: 0,
@@ -173,24 +198,49 @@ export default {
   },
   methods: {
     downloadImage(image) {
-      // console.log(image)
-      Image.download(image)
+      image.isDownloading = true
+      Image.download(image).then(() => {
+        image.isDownloading = false
+      })
     },
-    loadData() {
-      this.isloading = true
-      Image.get(this.$route.query.album).then(data => {
-        console.log(data.images)
+    loadData(page = 1, per_page = 15, needReload = true, orderBy = "-id") {
+      this.isloading = needReload
+      this.paginator.page = page
+      this.paginator.per_page = per_page
+      return Image.get(this.$route.query.album, page, per_page, orderBy).then(data => {
         this.images = data.images;
         this.paginator.totalRecords = data.total;
         this.isloading = false
       });
     },
     onSortChange(event) {
-      console.log(event)
+      if (this.orderBy != event.value.value) {
+        this.orderBy = event.value.value;
+        this.loadData(1, this.paginator.per_page, true, this.orderBy).then(() => {
+          this.first = 0
+        })
+      }
+
+      // console.log(event)
     },
-    async deleteImage(id) {
-      await Image.delete(id);
-      this.loadData();
+    deleteImage(event, id) {
+
+      this.$confirm.require({
+        target: event.currentTarget,
+        message: 'Do you want to delete this image?',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-danger',
+        accept: () => {
+          this.images = this.images.filter(image => image.id != id);
+          Image.delete(id).then(() => {
+            this.$toast.add({ severity: 'warn', summary: 'Success Message', detail: `Image ${id} has been deleted !`, life: 3000 });
+          });
+        },
+        reject: () => {
+          // this.$toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+        }
+      });
+
     },
 
     imageClick(index) {
@@ -199,25 +249,17 @@ export default {
     },
     onUpload() {
       this.showUpload = false
-      this.loadData();
+      this.loadData(1, this.paginator.per_page, true).then(() => {
+        this.first = 0
+      });
     },
     onPage(event) {
-
       console.log(event)
-      this.isloading = true
-      Image.get(this.$route.query.album, event.page + 1, event.rows).then(data => {
-        console.log(data.images)
-        this.first = 0
-        this.images = data.images;
-        // console.log(data)
-        this.paginator.totalRecords = data.total
-        this.isloading = false
-      });
-
-      //event.page: New page number
-      //event.first: Index of first record
-      //event.rows: Number of rows to display in new page
-      //event.pageCount: Total number of pages
+      this.isChangingPage = true
+      this.loadData(event.page + 1, event.rows, false).then(() => {
+        this.first = event.first
+        this.isChangingPage = false
+      })
     }
 
   },
@@ -234,19 +276,6 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-.ProgressSpinner {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%);
-  transform: translateY(-50%);
-}
-
-
-
-
-
-
 .card {
   background: #ffffff;
   padding: 2rem;
@@ -338,6 +367,12 @@ export default {
 
   .product-grid-item-content {
     text-align: center;
+
+    img {
+      width: 300px;
+      height: 200px;
+      object-fit: scale-down;
+    }
   }
 
   .product-price {
@@ -376,5 +411,36 @@ export default {
       width: 100%;
     }
   }
+}
+
+@keyframes p-progress-spinner-color {
+
+  100%,
+  0% {
+    stroke: #d62d20;
+  }
+
+  40% {
+    stroke: #0057e7;
+  }
+
+  66% {
+    stroke: #008744;
+  }
+
+  80%,
+  90% {
+    stroke: #ffa700;
+  }
+}
+
+.progress-spinner-container {
+
+  display: flex;
+  align-items: center;
+  margin: 2rem auto;
+  width: 300px;
+  height: 200px;
+  box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
 }
 </style>

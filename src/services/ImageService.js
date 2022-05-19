@@ -10,7 +10,6 @@ class ImageService {
     }
     delete(id) {
         return axios.delete(`/images/${id}`)
-
     }
 
     store(images, album, onProgres) {
@@ -34,10 +33,14 @@ class ImageService {
     }
 
     download(image) {
-        axios.get(`https://mini17.net/proxy/cdn/${image.uri}`, {
+        return axios.get(`/download/image`, {
+            params: {
+                id: image.id
+            },
             responseType: 'blob',
         }).then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            console.log(response);
+            let fileURL = window.URL.createObjectURL(new Blob([response]));
             let fileLink = document.createElement('a');
             fileLink.href = fileURL;
             fileLink.setAttribute('download', image.name);
@@ -45,17 +48,26 @@ class ImageService {
             fileLink.click();
         });
     }
-    get(album = 1, page = 1, per_page = 15) {
+    get(album = 1, page = 1, per_page = 15, order_by = "-id") {
         return axios.get("/images", {
             params: {
-                album, page, per_page
+                album, page, per_page, order_by
             },
         }).then(res => {
-            console.log(res.data)
             res.data.forEach(image => {
-                image.src = "http://cdn4s.100pq.cn/" + image.uri
-                image.thumbnail_src = "http://cdn4s.100pq.cn/" + image.thumbnail_uri
-                image.alt = "http://cdn4s.100pq.cn/" + image.name
+                if (image.has_uploaded_to_cdn) {
+                    image.src = process.env.VUE_APP_BASE_CDN + image.uri
+                } else {
+                    image.src = process.env.VUE_APP_BASE_BACKEND + image.uri
+                }
+
+                if (image.thumbnail_has_uploaded_to_cdn) {
+                    image.thumbnail_src = process.env.VUE_APP_BASE_CDN + image.thumbnail_uri
+                } else {
+                    image.thumbnail_src = process.env.VUE_APP_BASE_BACKEND + image.thumbnail_uri
+                }
+                image.alt = image.name
+                image.isDownloading = false
             });
             return {
                 total: res.total,

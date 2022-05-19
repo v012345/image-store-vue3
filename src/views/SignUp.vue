@@ -71,7 +71,6 @@ export default {
                 this.$router.push("/")
             }).catch(e => {
                 this.isSigningUp = false
-                console.log(e)
                 for (const key in e.response.data) {
                     e.response.data[key].forEach(element => {
                         this.$toast.add({ severity: 'error', summary: key, detail: element, life: 3000 });

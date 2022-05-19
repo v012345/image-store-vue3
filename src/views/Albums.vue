@@ -14,8 +14,7 @@
       <div v-for="album in albums" :key="album.id" class="album">
         <Card style="width: 330px">
           <template #header>
-            <img src="https://www.primefaces.org/wp-content/uploads/2020/02/primefacesorg-primevue-2020.png"
-              style="height: 180px" />
+            <img :src="album.cover" style="height: 180px" />
           </template>
           <template #title>
             {{ album.name }}

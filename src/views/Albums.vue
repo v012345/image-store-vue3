@@ -10,12 +10,30 @@
           :loading="isCreating" />
       </template>
     </Toolbar>
-    <div v-for="album in albums" :key="album.id">
-      <i class="pi pi-folder-open">
-        <router-link :to="{ path: '/images', query: { album: album.id } }">{{ album.name }} [{{ album.images_count }}]
-        </router-link>
-      </i>
+    <div class="albums">
+      <div v-for="album in albums" :key="album.id" class="album">
+        <Card style="width: 330px">
+          <template #header>
+            <img src="https://www.primefaces.org/wp-content/uploads/2020/02/primefacesorg-primevue-2020.png"
+              style="height: 180px" />
+          </template>
+          <template #title>
+            {{ album.name }}
+          </template>
+          <template #subtitle>
+            contain {{ album.images_count }} {{ album.images_count > 1 ? "images" : "image" }}
+          </template>
+
+          <template #footer>
+            <div class="buttons">
+              <Button icon="pi pi-check" label="Open" @click="openAlnum(album.id)" />
+              <Button icon="pi pi-times" label="Delete" class="p-button-secondary" style="margin-left: .5em" />
+            </div>
+          </template>
+        </Card>
+      </div>
     </div>
+
     <div class="field col-12 md:col-12" v-if="loading">
       <Skeleton class="mb-2"></Skeleton>
       <Skeleton width="10rem" class="mb-2"></Skeleton>
@@ -47,7 +65,11 @@ export default {
           this.$router.push({ path: '/images', query: { album: data.id } })
         });
       }
+    },
+    openAlnum(id) {
+      this.$router.push({ path: '/images', query: { album: id } })
     }
+
   },
 
 
@@ -63,9 +85,34 @@ export default {
 
 <style scoped lang="less">
 .p-inputtext {
-
   margin-right: .5rem;
+}
+
+p {
+  line-height: 1.5;
+  margin: 0;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
+.albums {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 350px);
+  justify-content: space-between;
+  grid-gap: 20px;
 
 
+
+  .album {
+
+    margin: 0.5rem
+  }
+
+  img {
+    object-fit: scale-down;
+  }
 }
 </style>

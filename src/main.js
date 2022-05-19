@@ -23,6 +23,7 @@ import Chip from 'primevue/chip';
 import Menu from 'primevue/menu';
 import ConfirmPopup from 'primevue/confirmpopup';
 import ConfirmationService from 'primevue/confirmationservice';
+import Chart from 'primevue/chart';
 import router from './router'
 import store from "./store";
 
@@ -65,6 +66,7 @@ app.component('Card', Card);
 app.component('Chip', Chip);
 app.component('Menu', Menu);
 app.component('ConfirmPopup', ConfirmPopup);
+app.component('Chart', Chart);
 
 
 app.mount('#app')

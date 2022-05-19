@@ -10,6 +10,9 @@
 
     </template>
   </Toolbar>
+  <template v-if="hasAuth">
+    <StatisticsVue></StatisticsVue>
+  </template>
 
 </template>
 
@@ -17,12 +20,14 @@
 import Auth from '@/utils/auth'
 
 import UserVue from "@/components/User.vue"
+import StatisticsVue from "@/components/Statistics.vue"
 export default {
   name: 'Home',
-  components: { UserVue },
+  components: { UserVue, StatisticsVue },
   data() {
     return {
       hasAuth: Auth.getToken(),
+
     }
   },
   methods: {

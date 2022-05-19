@@ -22,7 +22,7 @@ class AlbumService {
                     album.cover = "https://www.primefaces.org/wp-content/uploads/2020/02/primefacesorg-primevue-2020.png"
                 }
             });
-
+            return data
             // console.log(data)
         })
         // return fetch('demo/data/products-small.json').then(res => res.json()).then(d => d.data);

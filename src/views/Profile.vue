@@ -17,9 +17,18 @@
                         <div class="grid">
                             <div class="col-12 flex align-items-center justify-content-center">
                                 <div class="p-fluid">
+                                    <div class="avatar">
+                                        <Avatar
+                                            image="https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png"
+                                            class="mr-2" size="xlarge" shape="circle" />
+                                    </div>
                                     <div class="field">
                                         <label for="name">Name</label>
-                                        <InputText id="name" type="text" v-model="name" />
+                                        <InputText id="name" type="text" v-model="info.name" />
+                                    </div>
+                                    <div class="field">
+                                        <label for="email">E-mail</label>
+                                        <InputText id="email" disabled type="text" v-model="info.email" />
                                     </div>
                                     <Button label="Save" @click="save" :loading="isSaving"></Button>
                                 </div>
@@ -45,7 +54,11 @@ export default {
     data() {
         return {
             isSaving: false,
-            info: User.getInfo(),
+            info: {
+                name: "",
+                avatar: "",
+                email: ""
+            },
             name: "123"
         }
     },
@@ -54,6 +67,15 @@ export default {
             console.log(this.info)
         }
     },
+    created() {
+        User.getInfo().then(info => {
+            console.log(info)
+            this.info.name = info.name
+            this.info.avatar = info.avatar
+            this.info.email = info.email
+        });
+
+    }
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -61,5 +83,10 @@ export default {
 .container {
     // transform: translateY(50%);
     margin-top: 100px;
+}
+
+.avatar {
+    display: flex;
+    justify-content: center;
 }
 </style>

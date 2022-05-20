@@ -25,7 +25,7 @@ export default {
                         label: 'profile',
                         icon: 'pi pi-times',
                         command: () => {
-
+                            this.$router.push("/profile")
                             // this.$toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000 });
                         }
                     }

@@ -5,7 +5,7 @@
         <Button label="Home" @click="$router.push('/')" />
       </template>
       <template #end>
-        <InputText type="text" v-model="albumName" placeholder="Album Name" />
+        <InputText type="text" v-model.trim="albumName" placeholder="Album Name" />
         <Button label="Create" icon="pi pi-check" class="p-button-success" @click="createAlbum($event)"
           :loading="isCreating" />
       </template>
@@ -17,16 +17,29 @@
             <img :src="album.cover" style="height: 180px" />
           </template>
           <template #title>
-            {{ album.name }}
+            <Inplace :active="album.isRenaming" @open="album.isRenaming = true">
+              <template #display>
+                {{ album.name }}
+              </template>
+              <template #content>
+                <InputText v-model="album.name" autoFocus /> <Button @click="renameAlbum(album)"
+                  icon="pi pi-check"></Button>
+              </template>
+            </Inplace>
+
           </template>
           <template #subtitle>
-            contain {{ album.images_count }} {{ album.images_count > 1 ? "images" : "image" }}
+            contain {{ album.images_count }} {{ album.images_count > 1 ? "images" : "image" }}, total size {{
+                (album.size
+                  / 1024).toFixed(2)
+            }} KB
           </template>
 
           <template #footer>
             <div class="buttons">
               <Button icon="pi pi-check" label="Open" @click="openAlnum(album.id)" />
-              <Button icon="pi pi-times" label="Delete" class="p-button-secondary" style="margin-left: .5em" />
+              <Button icon="pi pi-download" label="Download" @click="downloadAlbum(album)" class="p-button-secondary"
+                :loading="album.isDownloading" style="margin-left: .5em" />
             </div>
           </template>
         </Card>
@@ -57,6 +70,12 @@ export default {
     }
   },
   methods: {
+    downloadAlbum(album) {
+      album.isDownloading = true
+      Album.download(album).then(() => {
+        album.isDownloading = false
+      })
+    },
     createAlbum() {
       if (this.albumName) {
         this.isCreating = true
@@ -67,6 +86,10 @@ export default {
     },
     openAlnum(id) {
       this.$router.push({ path: '/images', query: { album: id } })
+    },
+    renameAlbum(album) {
+      album.isRenaming = false;
+      Album.remane(album).then(() => { })
     }
 
   },

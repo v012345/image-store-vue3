@@ -69,14 +69,15 @@
                   <div class="product-name">{{ slotProps.data.name }}</div>
                   <!-- <div class="product-description">{{ slotProps.data.description }}</div> -->
                   <!-- <Rating :modelValue="slotProps.data.rating" :readonly="true" :cancel="false"></Rating> -->
-                  <i class="pi pi-tag product-category-icon"></i><span class="product-category">{{
-                      slotProps.data.category
-                  }}</span>
+                  <i class="pi pi-file product-category-icon"></i>
+                  <span class="product-category">{{ slotProps.data.width }} x {{ slotProps.data.height }} px | {{
+                      (slotProps.data.size / 1024).toFixed(2)
+                  }} KB </span>
                 </div>
                 <div class="product-list-action">
                   <!-- <span class="product-price">${{ slotProps.data.price }}</span> -->
-                  <Button icon="pi pi-shopping-cart" label="Add to Cart"
-                    :disabled="slotProps.data.inventoryStatus === 'OUTOFSTOCK'"></Button>
+                  <Button label="download" icon="pi pi-download" @click="downloadImage(slotProps.data)"
+                    :loading="slotProps.data.isDownloading"></Button>
                   <!-- <span :class="'product-badge status-' + slotProps.data.inventoryStatus.toLowerCase()">{{
                       slotProps.data.inventoryStatus
                   }}</span> -->
@@ -91,8 +92,10 @@
               <div class="product-grid-item card">
                 <div class="product-grid-item-top">
                   <div>
-                    <i class="pi pi-tag product-category-icon"></i>
-                    <span class="product-category">{{ slotProps.data.albums[0].name }}</span>
+                    <i class="pi pi-file product-category-icon"></i>
+                    <span class="product-category">{{ slotProps.data.width }} x {{ slotProps.data.height }} px | {{
+                        (slotProps.data.size / 1024).toFixed(2)
+                    }} KB </span>
                   </div>
                   <Button icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"
                     @click="deleteImage($event, slotProps.data.id)"></Button>
@@ -112,8 +115,20 @@
                     </div>
                   </template>
 
-                  <div class="product-name">{{ slotProps.data.name }}</div>
-                  <div class="product-description">{{ slotProps.data.created_at }}</div>
+                  <!-- <div class="product-name"></div> -->
+                  <Inplace :active="slotProps.data.isInputtingIntro" @open="slotProps.data.isInputtingIntro = true">
+                    <template #display>
+                      {{ slotProps.data.introduction }}
+                    </template>
+                    <template #content>
+                      <InputText v-model="slotProps.data.introduction" autoFocus /> <Button
+                        @click="modifyIntroduction(slotProps.data)" icon="pi pi-check"></Button>
+                    </template>
+                  </Inplace>
+
+
+                  <div class="product-description">{{ slotProps.data.name }}</div>
+                  <div class="product-description">{{ slotProps.data.created_at }} </div>
                   <!-- <Rating :modelValue="slotProps.data.rating" :readonly="true" :cancel="false"></Rating> -->
                 </div>
                 <div class="product-grid-item-bottom">
@@ -197,6 +212,10 @@ export default {
     }
   },
   methods: {
+    modifyIntroduction(image) {
+      image.isInputtingIntro = false;
+      Image.introduction(image).then(() => { })
+    },
     downloadImage(image) {
       image.isDownloading = true
       Image.download(image).then(() => {
@@ -285,6 +304,12 @@ export default {
   margin-top: 1rem;
 }
 
+.p-inplace {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
 .p-dropdown {
   width: 14rem;
   font-weight: normal;
@@ -293,10 +318,11 @@ export default {
 .product-name {
   font-size: 1.5rem;
   font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 
 .product-description {
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.5rem 0;
 }
 
 .product-category-icon {

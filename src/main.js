@@ -24,6 +24,8 @@ import Menu from 'primevue/menu';
 import ConfirmPopup from 'primevue/confirmpopup';
 import ConfirmationService from 'primevue/confirmationservice';
 import Chart from 'primevue/chart';
+import Inplace from 'primevue/inplace';
+import Avatar from 'primevue/avatar';
 import router from './router'
 import store from "./store";
 
@@ -67,6 +69,8 @@ app.component('Chip', Chip);
 app.component('Menu', Menu);
 app.component('ConfirmPopup', ConfirmPopup);
 app.component('Chart', Chart);
+app.component('Inplace', Inplace);
+app.component('Avatar', Avatar);
 
 
 app.mount('#app')

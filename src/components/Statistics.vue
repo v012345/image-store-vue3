@@ -14,7 +14,7 @@
         <div class="card right">
             <Button label="My Albums" icon="pi pi-folder" class="p-button-raised p-button-warning"
                 @click="$router.push('/albums')" />
-            <Button label="My Profile" icon="pi pi-user" />
+            <Button label="My Profile" icon="pi pi-user"  @click="$router.push('/profile')" />
         </div>
     </div>
 </template>
@@ -63,20 +63,20 @@ export default {
                 }
             },
             albumsData: {
-                labels: ["loading"],
+                labels: [],
                 datasets: [
                     {
-                        data: [1],
+                        data: [],
                         backgroundColor: ["#42A5F5", "#66BB6A", "#FFA726", "#F1172F"],
                         hoverBackgroundColor: ["#64B5F6", "#81C784", "#FFB74D", "#A1F721"]
                     }
                 ]
             },
             sizeData: {
-                labels: ["loading"],
+                labels: [],
                 datasets: [
                     {
-                        data: [10],
+                        data: [],
                         backgroundColor: ["#42A5F5", "#66BB6A", "#FFA726", "#F1172F"],
                         hoverBackgroundColor: ["#64B5F6", "#81C784", "#FFB74D", "#A1F721"]
                     }

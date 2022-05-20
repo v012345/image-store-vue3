@@ -32,6 +32,12 @@ class ImageService {
         }, config)
     }
 
+    introduction(image) {
+        return axios.put("/images/" + image.id, {
+            introduction: image.introduction
+        })
+    }
+
     download(image) {
         return axios.get(`/download/image`, {
             params: {
@@ -39,7 +45,7 @@ class ImageService {
             },
             responseType: 'blob',
         }).then((response) => {
-            console.log(response);
+            // console.log(response);
             let fileURL = window.URL.createObjectURL(new Blob([response]));
             let fileLink = document.createElement('a');
             fileLink.href = fileURL;
@@ -67,6 +73,7 @@ class ImageService {
                     image.thumbnail_src = process.env.VUE_APP_BASE_BACKEND + image.thumbnail_uri
                 }
                 image.alt = image.name
+                image.isInputtingIntro = false
                 image.isDownloading = false
             });
             return {

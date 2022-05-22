@@ -18,9 +18,7 @@
                             <div class="col-12 flex align-items-center justify-content-center">
                                 <div class="p-fluid">
                                     <div class="avatar">
-                                        <Avatar
-                                            image="https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png"
-                                            class="mr-2" size="xlarge" shape="circle" />
+                                        <Avatar :image="this.info.avatar" class="mr-2" size="xlarge" shape="circle" />
                                     </div>
                                     <div class="field">
                                         <label for="name">Name</label>
@@ -55,6 +53,7 @@ export default {
         return {
             isSaving: false,
             info: {
+                id: undefined,
                 name: "",
                 avatar: "",
                 email: ""
@@ -64,15 +63,14 @@ export default {
     },
     methods: {
         save() {
-            console.log(this.info)
+            User.update(this.info).then((info) => {
+                console.log(info)
+            })
         }
     },
     created() {
         User.getInfo().then(info => {
-            console.log(info)
-            this.info.name = info.name
-            this.info.avatar = info.avatar
-            this.info.email = info.email
+            this.info = info
         });
 
     }

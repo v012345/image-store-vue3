@@ -35,6 +35,14 @@ class UserService {
     logout() {
         return axios.post('/auth/logout')
     }
+    update(user) {
+        return axios.put(`/users/${user.id}`, {
+            ...user
+        }).then((info) => {
+            Cookies.set("username", info.name)
+            return info
+        })
+    }
 
 }
 

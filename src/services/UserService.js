@@ -1,13 +1,11 @@
 import axios from '@/utils/request'
 import Auth from '@/utils/auth'
-import Cookies from 'js-cookie'
+import store from '@/store';
 
 
 class UserService {
     constructor() {
         if (!UserService.instance) {
-            this.name = Cookies.get("username") ?? "";
-            this.avatar = "https://www.primefaces.org/primevue/demo/images/avatar/amyelsner.png"
             UserService.instance = this;
         }
         return UserService.instance;
@@ -15,17 +13,16 @@ class UserService {
     login(data) {
         return axios.post('/auth/login', data).then(res => {
             Auth.setToken("Bearer " + res.token)
-            Cookies.set("username", res.name)
-            this.name = res.name
-
-            return res
+            store.commit("setName", res.name)
+            store.commit("setAvatar", process.env.VUE_APP_BASE_BACKEND + res.avatar)
+            // store.name = res.name
         })
     }
     register(data) {
         return axios.post('/auth/register', data).then(res => {
             Auth.setToken("Bearer " + res.token)
-            Cookies.set("username", res.name)
-            this.name = res.name
+            store.commit("setName", res.name)
+            store.commit("setAvatar", process.env.VUE_APP_BASE_BACKEND + res.avatar)
             return res
         })
     }
@@ -39,9 +36,23 @@ class UserService {
         return axios.put(`/users/${user.id}`, {
             ...user
         }).then((info) => {
-            Cookies.set("username", info.name)
+            store.commit("setName", info.name)
+            store.commit("setAvatar", process.env.VUE_APP_BASE_BACKEND + info.avatar)
             return info
         })
+    }
+    uploadAvatar(avatar, onProgres) {
+        let config = {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+        }
+        if (onProgres && typeof (onProgres) == "function") {
+            config.onUploadProgress = onProgres
+        }
+        return axios.post("/user/avatar", {
+            "avatar": avatar[0],
+        }, config)
     }
 
 }

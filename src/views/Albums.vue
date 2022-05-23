@@ -38,8 +38,8 @@
           <template #footer>
             <div class="buttons">
               <Button icon="pi pi-check" label="Open" @click="openAlnum(album.id)" />
-              <Button icon="pi pi-download" label="Download" @click="downloadAlbum(album)" class="p-button-secondary"
-                :loading="album.isDownloading" style="margin-left: .5em" />
+              <Button icon="pi pi-download" label="Download" @click="downloadAlbum(album)"
+                :loading="album.isDownloading" style="margin-left: .5em" :disabled="album.images_count <= 0" />
             </div>
           </template>
         </Card>
@@ -71,10 +71,18 @@ export default {
   },
   methods: {
     downloadAlbum(album) {
-      album.isDownloading = true
-      Album.download(album).then(() => {
-        album.isDownloading = false
-      })
+
+      // console.log(album)
+      if (album.images_count > 0) {
+        album.isDownloading = true
+        Album.download(album).then(() => {
+          album.isDownloading = false
+        }).catch(e => {
+          console.log(e)
+          album.isDownloading = false
+        })
+      }
+
     },
     createAlbum() {
       if (this.albumName) {

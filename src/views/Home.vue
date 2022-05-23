@@ -13,6 +13,9 @@
   <template v-if="hasAuth">
     <StatisticsVue></StatisticsVue>
   </template>
+  <template v-else>
+    <TechStack></TechStack>
+  </template>
 
 </template>
 
@@ -21,9 +24,10 @@ import Auth from '@/utils/auth'
 
 import UserVue from "@/components/User.vue"
 import StatisticsVue from "@/components/Statistics.vue"
+import TechStack from "@/components/TechStack.vue"
 export default {
   name: 'Home',
-  components: { UserVue, StatisticsVue },
+  components: { UserVue, StatisticsVue, TechStack },
   data() {
     return {
       hasAuth: Auth.getToken(),
